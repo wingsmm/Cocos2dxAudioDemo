@@ -256,6 +256,14 @@ void CocosDenshionTest::onExit()
 
 void CocosDenshionTest::addButtons()
 {
+    
+    
+    /**
+     *  Control Music
+     *
+     */
+    
+    
     auto lblMusic = Label::createWithTTF("Control Music", "fonts/arial.ttf", 24);
     addChildAt(lblMusic, 0.25f, 0.9f);
 
@@ -297,6 +305,21 @@ void CocosDenshionTest::addButtons()
             CCLOG("background music is not playing");
     });
     addChildAt(btnIsPlayingMusic, 0.4f, 0.65f);
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     *  Control Effects
+     */
 
     auto lblSound = Label::createWithTTF("Control Effects", "fonts/arial.ttf", 24);
     addChildAt(lblSound, 0.75f, 0.9f);
@@ -364,6 +387,11 @@ void CocosDenshionTest::addButtons()
 
 void CocosDenshionTest::addSliders()
 {
+    /**
+     *  Control Effects
+     */
+    
+    
     auto lblPitch = Label::createWithTTF("Pitch", "fonts/arial.ttf", 14);
     addChildAt(lblPitch, 0.67f, 0.4f);
     _sliderPitch = AudioSlider::create(AudioSlider::Horizontal);
@@ -387,6 +415,13 @@ void CocosDenshionTest::addSliders()
     _sliderEffectsVolume = AudioSlider::create(AudioSlider::Horizontal);
     _sliderEffectsVolume->setValue(0, 1, 1);
     addChildAt(_sliderEffectsVolume, 0.85f, 0.5f);
+    
+    
+    /**
+     *  Control Music
+     *
+     */
+
 
     auto lblMusicVolume = Label::createWithTTF("Music Volume", "fonts/arial.ttf", 14);
     addChildAt(lblMusicVolume, 0.12f, 0.5f);

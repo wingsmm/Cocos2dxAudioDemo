@@ -32,16 +32,11 @@ using namespace cocos2d;
 using namespace cocos2d::ui;
 using namespace cocos2d::experimental;
 
-AudioEngineTests::AudioEngineTests()
-{
-    ADD_TEST_CASE(AudioControlTest);
-    ADD_TEST_CASE(PlaySimultaneouslyTest);
-    ADD_TEST_CASE(AudioProfileTest);
-    ADD_TEST_CASE(InvalidAudioFileTest);
-    ADD_TEST_CASE(LargeAudioFileTest);
-}
 
 namespace {
+    
+    
+    
     
     class TextButton : public cocos2d::Label
     {
@@ -157,9 +152,9 @@ namespace {
             if (ret && ret->init())
             {
                 ret->_callback = nullptr;
-                ret->loadBarTexture("cocosui/sliderTrack.png");
-                ret->loadSlidBallTextures("cocosui/sliderThumb.png", "cocosui/sliderThumb.png", "");
-                ret->loadProgressBarTexture("cocosui/sliderProgress.png");
+                ret->loadBarTexture("extensions/sliderTrack.png");
+                ret->loadSlidBallTextures("extensions/sliderThumb.png", "extensions/sliderThumb.png", "");
+                ret->loadProgressBarTexture("extensions/sliderProgress.png");
                 
                 ret->autorelease();
                 
@@ -260,6 +255,17 @@ namespace {
     };
 }
 
+
+AudioEngineTests::AudioEngineTests()
+{
+    ADD_TEST_CASE(AudioControlTest);
+    ADD_TEST_CASE(PlaySimultaneouslyTest);
+    ADD_TEST_CASE(AudioProfileTest);
+    ADD_TEST_CASE(InvalidAudioFileTest);
+    ADD_TEST_CASE(LargeAudioFileTest);
+}
+
+
 void AudioEngineTestDemo::onExit()
 {
     AudioEngine::stopAll();
@@ -286,12 +292,36 @@ bool AudioControlTest::init()
     
     auto& layerSize = this->getContentSize();
     
+    
+    
+    /**
+     *  播放按钮
+     */
+    
+    
+    
+    
+    //创建菜单项，点击时播放音效
+    
     auto playItem = TextButton::create("play", [&](TextButton* button){
+        
+        // 点击按钮后开始播放的回调函数
+        
         if (_audioID == AudioEngine::INVALID_AUDIO_ID) {
+            
+            
+            //播放音效文件
             _audioID = AudioEngine::play2d("background.mp3", _loopEnabled, _volume);
             
+            
+            
+            
             if(_audioID != AudioEngine::INVALID_AUDIO_ID) {
+                
                 button->setEnabled(false);
+                
+                //播放完成后的回调函数，用来更改播放状态
+
                 AudioEngine::setFinishCallback(_audioID, [&](int id, const std::string& filePath){
                     _audioID = AudioEngine::INVALID_AUDIO_ID;
                     ((TextButton*)_playItem)->setEnabled(true);
@@ -306,6 +336,12 @@ bool AudioControlTest::init()
     playItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.7f);
     addChild(playItem);
     
+    
+    
+    /**
+     *  停止按钮
+     */
+    
     auto stopItem = TextButton::create("stop", [&](TextButton* button){
         if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
             AudioEngine::stop(_audioID);
@@ -317,6 +353,12 @@ bool AudioControlTest::init()
     stopItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.7f);
     addChild(stopItem);
     
+    
+    
+    /**
+     *  暂停按钮
+     */
+    
     auto pauseItem = TextButton::create("pause", [&](TextButton* button){
         if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
             AudioEngine::pause(_audioID);
@@ -324,6 +366,11 @@ bool AudioControlTest::init()
     });
     pauseItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.6f);
     addChild(pauseItem);
+    
+    
+    /**
+     *  恢复按钮
+     */
     
     auto resumeItem = TextButton::create("resume", [&](TextButton* button){
         if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
@@ -333,6 +380,10 @@ bool AudioControlTest::init()
     resumeItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.6f);
     addChild(resumeItem);
     
+    
+    /**
+     *  循环播放
+     */
     auto loopItem = TextButton::create("enable-loop", [&](TextButton* button){
         _loopEnabled = !_loopEnabled;
         
@@ -349,6 +400,9 @@ bool AudioControlTest::init()
     loopItem->setPosition(layerSize.width * 0.3f,layerSize.height * 0.5f);
     addChild(loopItem);
     
+    
+    
+    
     auto uncacheItem = TextButton::create("uncache", [&](TextButton* button){
         AudioEngine::uncache("background.mp3");
         
@@ -357,6 +411,13 @@ bool AudioControlTest::init()
     });
     uncacheItem->setPosition(layerSize.width * 0.7f,layerSize.height * 0.5f);
     addChild(uncacheItem);
+    
+    
+    /**
+     *  音量显示
+     *
+     */
+    
     
     auto volumeSlider = SliderEx::create();
     volumeSlider->setPercent(100);
@@ -369,8 +430,14 @@ bool AudioControlTest::init()
     volumeSlider->setPosition(Vec2(layerSize.width * 0.5f,layerSize.height * 0.35f));
     addChild(volumeSlider);
     
+    
+    
+    /**
+     *  进度显示
+     */
     auto timeSlider = SliderEx::create();
     timeSlider->setCallBack([&](SliderEx* sender,float ratio,SliderEx::TouchEvent event){
+        
         switch(event){
             case SliderEx::TouchEvent::MOVE:
             case SliderEx::TouchEvent::DOWN:
@@ -388,6 +455,9 @@ bool AudioControlTest::init()
     timeSlider->setPosition(Vec2(layerSize.width * 0.5f,layerSize.height * 0.25f));
     addChild(timeSlider);
     _timeSlider = timeSlider;
+    
+    
+    
     
     auto& volumeSliderPos = volumeSlider->getPosition();
     auto& sliderSize = volumeSlider->getContentSize();
@@ -409,6 +479,11 @@ bool AudioControlTest::init()
 
 void AudioControlTest::update(float dt)
 {
+    
+    /**
+     *  更新
+     */
+
     if (_audioID != AudioEngine::INVALID_AUDIO_ID ) {
         if(_duration == AudioEngine::TIME_UNKNOWN){
             _duration = AudioEngine::getDuration(_audioID);
@@ -418,6 +493,7 @@ void AudioControlTest::update(float dt)
             _timeRatio = time / _duration;
             if(_updateTimeSlider){
                 ((SliderEx*)_timeSlider)->setRatio(_timeRatio);
+                
             }
         }
     }
